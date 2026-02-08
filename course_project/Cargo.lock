@@ -1990,6 +1990,9 @@ name = "course_project"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_ecs",
+ "bevy_state",
+ "bevy_state_macros",
  "rand",
 ]
 
