@@ -1,36 +1,36 @@
+
+// Module Declarations
+mod states_game;
+mod states_ui;
+mod spawns;
+
+// Imports
 use bevy::prelude::*;
-use bevy::window::PrimaryWindow;
-use rand::random;
+use crate::states_game::*;
+use crate::states_ui::*;
 
 fn main() {
 
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins((DefaultPlugins, StatesForGame {}))
         .init_state::<GameState>()
         .init_resource::<LeftClickState>()
         .add_message::<LeftClick>()
-        .add_systems(Startup, (spawn_camera, spawn_square).chain())
+
+        // Systems that run every frame.
         .add_systems(Update, (detect_left_click, test_click).chain())
-        .add_systems(OnEnter(GameState::Settings), setup_settings)
-        .add_systems(OnExit(GameState::MainMenu), cleanup_main_menu)
         .run();
 }
 
-
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
-pub enum GameState {
+pub enum UIState {
     #[default]
     MainMenu,
     Settings,
     GameBoardCreator,
-    GameBoard
+    GameBoard,
+    PauseMenu
 }
-
-#[derive(Component)]
-pub struct ActivelyPlaying {}
-
-#[derive(Component)]
-pub struct Square {}
 
 #[derive(Message)]
 pub struct LeftClick {}
@@ -40,71 +40,14 @@ pub struct LeftClickState {
     left_click_occurred: bool
 }
 
-fn setup_settings
-(
-mut commands: Commands,
-window_query: Query<&Window, With<PrimaryWindow>>,
-asset_server: Res<AssetServer>
-)
-    -> Result<()>
-{
-
-    let window: &Window = window_query.single()?;
-    commands.spawn((
-        Square {},
-        Sprite::from_image(asset_server.load("sprites/Square.png")),
-        Transform::from_xyz(window.width() / 1.5, window.height() / 1.5, 0.0),
-    ));
-
-    Ok(())
-}
-
-fn cleanup_main_menu
-(
-    mut commands: Commands,
-    entity_query: Query<Entity, With<ActivelyPlaying>>,
-)
-{
-    for entity in entity_query.iter() {
-        commands.entity(entity).despawn();
+impl Default for LeftClickState {
+    fn default() -> Self {
+        Self {
+            left_click_occurred: false
+        }
     }
 }
 
-pub fn spawn_square
-(
-    mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-    asset_server: Res<AssetServer>
-)
-    -> Result<()>
-{
-
-    let window: &Window = window_query.single()?;
-    commands.spawn((
-        Square {},
-        ActivelyPlaying {},
-        Sprite::from_image(asset_server.load("sprites/Square.png")),
-        Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
-    ));
-
-    Ok(())
-}
-
-pub fn spawn_camera
-(
-    mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-)
-    -> Result<()>
-{
-    let window: &Window = window_query.single()?;
-    commands.spawn((
-        Camera2d,
-        Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0)
-    ));
-
-    Ok(())
-}
 
 pub fn detect_left_click (
     input: Res<ButtonInput<MouseButton>>,
@@ -132,17 +75,3 @@ pub fn test_click (
 
     Ok(())
 }
-
-impl Default for LeftClickState {
-    fn default() -> Self {
-        Self {
-            left_click_occurred: false
-        }
-    }
-}
-
-
-// if mouse_event.read().eq(MouseButton::Left) {
-//     let cursor_position: Vec2 = window.cursor_position().unwrap();
-//     println!("Hello!");
-// }
