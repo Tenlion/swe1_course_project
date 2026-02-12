@@ -4,7 +4,6 @@ use bevy::window::PrimaryWindow;
 use crate::spawns::*;
 
 pub struct StatesForGame {}
-
 impl Plugin for StatesForGame {
     fn build(&self, app: &mut App) {
 
@@ -15,14 +14,14 @@ impl Plugin for StatesForGame {
         // These "states" are the game rooms that players engage with - main menu, settings, the gameboard, and the gameboard creator.
         // Each state has its own enter functionality to spawn appropriate entities related to the room.
         // Each state has its own exit functionality to despawn entities within a room before transitioning to the next room.
-            app.add_systems(OnEnter(GameState::MainMenu), setup_main_menu);
-            app.add_systems(OnExit(GameState::MainMenu), cleanup_game_entities);
-            app.add_systems(OnEnter(GameState::Settings), setup_settings);
-            app.add_systems(OnExit(GameState::Settings), cleanup_game_entities);
-            app.add_systems(OnEnter(GameState::GameBoard), setup_gameboard);
-            app.add_systems(OnExit(GameState::GameBoard), cleanup_game_entities);
-            app.add_systems(OnEnter(GameState::GameBoardCreator), setup_gameboard_creator);
-            app.add_systems(OnExit(GameState::GameBoardCreator), cleanup_game_entities);
+        app.add_systems(OnEnter(GameState::MainMenu), setup_main_menu);
+        app.add_systems(OnExit(GameState::MainMenu), cleanup_game_entities);
+        app.add_systems(OnEnter(GameState::Settings), setup_settings);
+        app.add_systems(OnExit(GameState::Settings), cleanup_game_entities);
+        app.add_systems(OnEnter(GameState::GameBoard), setup_gameboard);
+        app.add_systems(OnExit(GameState::GameBoard), cleanup_game_entities);
+        app.add_systems(OnEnter(GameState::GameBoardCreator), setup_gameboard_creator);
+        app.add_systems(OnExit(GameState::GameBoardCreator), cleanup_game_entities);
     }
 }
 

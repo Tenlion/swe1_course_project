@@ -1,35 +1,34 @@
 
 // Module Declarations
 mod states_game;
-mod states_ui;
+mod states_gui;
 mod spawns;
 
 // Imports
 use bevy::prelude::*;
 use crate::states_game::*;
-use crate::states_ui::*;
+use crate::states_gui::*;
 
 fn main() {
 
     App::new()
-        .add_plugins((DefaultPlugins, StatesForGame {}))
-        .init_state::<GameState>()
+
+        // Plugins!  Which are also just files that we make and can add to the game in order
+        // to condense and organize code for projects within Bevy.
+        .add_plugins(DefaultPlugins)
+        .add_plugins(StatesForGame{})
+        .add_plugins(StatesForGUI{})
+
+        // Testing out custom states and how to create listeners through the message system
+        // that Bevy throws to its scheduling service for events to trigger from.
         .init_resource::<LeftClickState>()
         .add_message::<LeftClick>()
 
         // Systems that run every frame.
         .add_systems(Update, (detect_left_click, test_click).chain())
-        .run();
-}
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
-pub enum UIState {
-    #[default]
-    MainMenu,
-    Settings,
-    GameBoardCreator,
-    GameBoard,
-    PauseMenu
+        // Tells the app to launch.
+        .run();
 }
 
 #[derive(Message)]
