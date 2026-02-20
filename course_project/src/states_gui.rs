@@ -14,31 +14,35 @@ impl Plugin for StatesForGUI {
         // These "states" are the GUI elements that players engage with - main menu, settings, the gameboard, the gameboard creator, and the pause menu.
         // Each state has its own enter functionality to spawn appropriate entities related to the GUI.
         // Each state has its own exit functionality to despawn entities present before transitioning to the next room.
-        app.add_systems(OnEnter(GUIState::MainMenu_Default), setup_main_menu_default);
-        app.add_systems(OnExit(GUIState::MainMenu_Default), cleanup_gui_entities);
-        app.add_systems(OnEnter(GUIState::Settings_Default), setup_settings_default);
-        app.add_systems(OnExit(GUIState::Settings_Default), cleanup_gui_entities);
-        app.add_systems(OnEnter(GUIState::GameBoardCreator_Default), setup_gameboard_creator_default);
-        app.add_systems(OnExit(GUIState::GameBoardCreator_Default), cleanup_gui_entities);
-        app.add_systems(OnEnter(GUIState::GameBoard_Default), setup_gameboard_default);
-        app.add_systems(OnExit(GUIState::GameBoard_Default), cleanup_gui_entities);
-        app.add_systems(OnEnter(GUIState::PauseMenu_Default), setup_pause_menu_default);
-        app.add_systems(OnExit(GUIState::PauseMenu_Default), cleanup_gui_entities);
+        app.add_systems(OnEnter(GUIState::MainMenu), setup_main_menu);
+        app.add_systems(OnExit(GUIState::MainMenu), cleanup_gui_entities);
+
+        app.add_systems(OnEnter(GUIState::Settings), setup_settings);
+        app.add_systems(OnExit(GUIState::Settings), cleanup_gui_entities);
+
+        app.add_systems(OnEnter(GUIState::GameBoardCreator), setup_gameboard_creator);
+        app.add_systems(OnExit(GUIState::GameBoardCreator), cleanup_gui_entities);
+
+        app.add_systems(OnEnter(GUIState::GameBoard), setup_gameboard);
+        app.add_systems(OnExit(GUIState::GameBoard), cleanup_gui_entities);
+
+        app.add_systems(OnEnter(GUIState::PauseMenu), setup_pause_menu);
+        app.add_systems(OnExit(GUIState::PauseMenu), cleanup_gui_entities);
     }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
 pub enum GUIState {
     #[default]
-    MainMenu_Default,
-    Settings_Default,
-    GameBoardCreator_Default,
-    GameBoard_Default,
-    PauseMenu_Default
+    MainMenu,
+    Settings,
+    GameBoardCreator,
+    GameBoard,
+    PauseMenu
 }
 
 
-fn setup_main_menu_default
+fn setup_main_menu
 (
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -51,7 +55,7 @@ fn setup_main_menu_default
     Ok(())
 }
 
-fn setup_settings_default
+fn setup_settings
 (
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -64,7 +68,7 @@ fn setup_settings_default
     Ok(())
 }
 
-fn setup_gameboard_default
+fn setup_gameboard
 (
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -77,7 +81,7 @@ fn setup_gameboard_default
     Ok(())
 }
 
-fn setup_gameboard_creator_default
+fn setup_gameboard_creator
 (
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -90,7 +94,7 @@ fn setup_gameboard_creator_default
     Ok(())
 }
 
-fn setup_pause_menu_default
+fn setup_pause_menu
 (
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,

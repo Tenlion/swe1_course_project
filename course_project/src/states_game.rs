@@ -16,10 +16,13 @@ impl Plugin for StatesForGame {
         // Each state has its own exit functionality to despawn entities within a room before transitioning to the next room.
         app.add_systems(OnEnter(GameState::MainMenu), setup_main_menu);
         app.add_systems(OnExit(GameState::MainMenu), cleanup_game_entities);
+
         app.add_systems(OnEnter(GameState::Settings), setup_settings);
         app.add_systems(OnExit(GameState::Settings), cleanup_game_entities);
+
         app.add_systems(OnEnter(GameState::GameBoard), setup_gameboard);
         app.add_systems(OnExit(GameState::GameBoard), cleanup_game_entities);
+
         app.add_systems(OnEnter(GameState::GameBoardCreator), setup_gameboard_creator);
         app.add_systems(OnExit(GameState::GameBoardCreator), cleanup_game_entities);
     }

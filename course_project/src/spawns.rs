@@ -11,7 +11,7 @@ pub struct ActiveEntity {}
 pub struct GameEntity {}
 
 #[derive(Component)]
-pub struct UIEntity {}
+pub struct GUIEntity {}
 
 #[derive(Component)]
 pub struct CameraEntity {}
