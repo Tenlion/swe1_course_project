@@ -1,6 +1,6 @@
 
 use bevy::prelude::*;
-use bevy::window::PrimaryWindow;
+use bevy::window::{WindowMode, WindowResolution};
 use crate::spawns::*;
 
 pub struct StatesForGame {}
@@ -40,16 +40,23 @@ pub enum GameState {
 fn setup_main_menu
 (
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
+    mut windows: Query<&mut Window>,
     asset_server: Res<AssetServer>
 )
     -> Result<()>
 {
-    let window: &Window = window_query.single()?;
+    // Creating a window for the game that is set to borderless fullscreen, using the current monitor
+    // that the application was opened in, and sets the resolution, refresh rate, and bit depth to
+    // what the OS is currently set to.  I've set the window resizable to false because I want to
+    // ensure the aspect ratio of the images are maintained (I know there's a way to make the aspect
+    // ratio stay the same across resizing, but I'm not implementing that atm - have to look more into it.
+    let mut window = windows.single_mut()?;
+    window.mode = WindowMode::BorderlessFullscreen(MonitorSelection::Current);
+    window.resizable = false;
+
+    // Creates a camera for the game that is centered on the window's origin point.
     let camera_position: Vec3 = Vec3::new(window.width() / 2.0, window.height() / 2.0, 0.0);
-    let square_position: Vec3 = Vec3::new(window.width() / 2.0, window.height() / 2.0, 0.0);
     spawn_camera(&mut commands, camera_position);
-    spawn_square(&mut commands, &asset_server, square_position);
 
     Ok(())
 }
@@ -57,16 +64,13 @@ fn setup_main_menu
 fn setup_settings
 (
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
+    mut windows: Query<&mut Window>,
     asset_server: Res<AssetServer>
 )
     -> Result<()>
 {
-    let window: &Window = window_query.single()?;
-    let camera_position: Vec3 = Vec3::new(window.width() / 2.0, window.height() / 2.0, 0.0);
-    let square_position: Vec3 = Vec3::new(window.width() / 1.5, window.height() / 1.5, 0.0);
-    spawn_camera(&mut commands, camera_position);
-    spawn_square(&mut commands, &asset_server, square_position);
+    let window = windows.single_mut()?;
+
 
     Ok(())
 }
@@ -74,16 +78,13 @@ fn setup_settings
 fn setup_gameboard
 (
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
+    mut windows: Query<&mut Window>,
     asset_server: Res<AssetServer>
 )
     -> Result<()>
 {
-    let window: &Window = window_query.single()?;
-    let camera_position: Vec3 = Vec3::new(window.width() / 2.0, window.height() / 2.0, 0.0);
-    let square_position: Vec3 = Vec3::new(window.width() / 1.0, window.height() / 1.0, 0.0);
-    spawn_camera(&mut commands, camera_position);
-    spawn_square(&mut commands, &asset_server, square_position);
+    let window = windows.single_mut()?;
+
 
     Ok(())
 }
@@ -91,16 +92,14 @@ fn setup_gameboard
 fn setup_gameboard_creator
 (
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
+    mut windows: Query<&mut Window>,
     asset_server: Res<AssetServer>
 )
     -> Result<()>
 {
-    let window: &Window = window_query.single()?;
-    let camera_position: Vec3 = Vec3::new(window.width() / 2.0, window.height() / 2.0, 0.0);
-    let square_position: Vec3 = Vec3::new(window.width() / 0.5, window.height() / 0.5, 0.0);
-    spawn_camera(&mut commands, camera_position);
-    spawn_square(&mut commands, &asset_server, square_position);
+    let window = windows.single_mut()?;
+
+
 
     Ok(())
 }
@@ -109,10 +108,13 @@ fn setup_gameboard_creator
 fn cleanup_game_entities
 (
     mut commands: Commands,
-    entity_query: Query<Entity, With<ActiveEntity>>,
+    entity_query: Query<(Entity, &SpawnType)>,
 )
 {
-    for entity in entity_query.iter() {
-        commands.entity(entity).despawn();
+    for (entity, entity_type) in entity_query.iter()
+    {
+        if *entity_type == SpawnType::Game  {
+            commands.entity(entity).despawn();
+        }
     }
 }

@@ -1,6 +1,5 @@
 
 use bevy::prelude::*;
-use bevy::window::PrimaryWindow;
 use crate::spawns::*;
 
 pub struct StatesForGUI {}
@@ -45,12 +44,11 @@ pub enum GUIState {
 fn setup_main_menu
 (
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>
 )
     -> Result<()>
 {
-    let window: &Window = window_query.single()?;
+    spawn_button_play(&mut commands, &asset_server);
 
     Ok(())
 }
@@ -58,12 +56,11 @@ fn setup_main_menu
 fn setup_settings
 (
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>
 )
     -> Result<()>
 {
-    let window: &Window = window_query.single()?;
+
 
     Ok(())
 }
@@ -71,12 +68,11 @@ fn setup_settings
 fn setup_gameboard
 (
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>
 )
     -> Result<()>
 {
-    let window: &Window = window_query.single()?;
+
 
     Ok(())
 }
@@ -84,12 +80,11 @@ fn setup_gameboard
 fn setup_gameboard_creator
 (
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>
 )
     -> Result<()>
 {
-    let window: &Window = window_query.single()?;
+
 
     Ok(())
 }
@@ -97,12 +92,11 @@ fn setup_gameboard_creator
 fn setup_pause_menu
 (
     mut commands: Commands,
-    window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>
 )
     -> Result<()>
 {
-    let window: &Window = window_query.single()?;
+
 
     Ok(())
 }
@@ -110,10 +104,13 @@ fn setup_pause_menu
 fn cleanup_gui_entities
 (
     mut commands: Commands,
-    entity_query: Query<Entity, With<ActiveEntity>>,
+    entity_query: Query<(Entity, &SpawnType)>,
 )
 {
-    for entity in entity_query.iter() {
-        commands.entity(entity).despawn();
+    for (entity, entity_type) in entity_query.iter()
+    {
+        if *entity_type == SpawnType::GUI  {
+            commands.entity(entity).despawn();
+        }
     }
 }

@@ -6,6 +6,7 @@ mod spawns;
 
 // Imports
 use bevy::prelude::*;
+use bevy::window::{WindowMode, WindowResolution};
 use crate::states_game::*;
 use crate::states_gui::*;
 
