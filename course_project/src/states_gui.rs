@@ -49,6 +49,8 @@ fn setup_main_menu
     -> Result<()>
 {
     spawn_button_play(&mut commands, &asset_server);
+    spawn_button_settings(&mut commands, &asset_server);
+    spawn_button_exit_game(&mut commands, &asset_server);
 
     Ok(())
 }

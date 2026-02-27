@@ -6,9 +6,10 @@ mod spawns;
 
 // Imports
 use bevy::prelude::*;
-use bevy::window::{WindowMode, WindowResolution};
+use bevy::window::{Monitor, PrimaryMonitor, WindowResized};
 use crate::states_game::*;
 use crate::states_gui::*;
+use crate::spawns::*;
 
 fn main() {
 
@@ -19,6 +20,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(StatesForGame{})
         .add_plugins(StatesForGUI{})
+        .add_plugins(Spawns{})
 
         // Testing out custom states and how to create listeners through the message system
         // that Bevy throws to its scheduling service for events to trigger from.
