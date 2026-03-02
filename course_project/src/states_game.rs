@@ -1,6 +1,6 @@
 
 use bevy::prelude::*;
-use bevy::window::{WindowMode, WindowResolution};
+use bevy::window::WindowMode;
 use crate::spawns::*;
 
 pub struct StatesForGame {}
@@ -108,13 +108,14 @@ fn setup_gameboard_creator
 fn cleanup_game_entities
 (
     mut commands: Commands,
-    entity_query: Query<(Entity, &SpawnType)>,
+    entity_query: Query<(Entity, &SpawnTypes)>,
 )
 {
-    for (entity, entity_type) in entity_query.iter()
-    {
-        if *entity_type == SpawnType::Game  {
-            commands.entity(entity).despawn();
+    for (entity, spawn_type) in entity_query.iter() {
+
+        match spawn_type {
+            SpawnTypes::Game(_) => { commands.entity(entity).despawn(); }
+            _ => {}
         }
     }
 }

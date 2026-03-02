@@ -1,14 +1,13 @@
 
 // Module Declarations
 mod states_game;
-mod states_gui;
+mod states_ui;
 mod spawns;
 
 // Imports
 use bevy::prelude::*;
-use bevy::window::{Monitor, PrimaryMonitor, WindowResized};
 use crate::states_game::*;
-use crate::states_gui::*;
+use crate::states_ui::*;
 use crate::spawns::*;
 
 fn main() {
@@ -18,8 +17,8 @@ fn main() {
         // Plugins!  Which are also just files that we make and can add to the game in order
         // to condense and organize code for projects within Bevy.
         .add_plugins(DefaultPlugins)
+        .add_plugins(StatesForUI{})
         .add_plugins(StatesForGame{})
-        .add_plugins(StatesForGUI{})
         .add_plugins(Spawns{})
 
         // Testing out custom states and how to create listeners through the message system
