@@ -40,6 +40,7 @@ pub enum UIButtons {
 #[derive(Component, PartialEq)]
 pub enum UILabels {
     Title,
+    Pause,
 }
 
 #[derive(Component, PartialEq)]
@@ -210,10 +211,10 @@ pub fn handle_ui_button_interactions(
             if let SpawnTypes::UI(UISpawnTypes::Button(button)) = spawn_type {
 
                 match button {
-                    UIButtons::Play => next_state.set(UIState::GameBoard),
+                    UIButtons::Play => next_state.set(UIState::GameBoardCreator),
                     UIButtons::Settings => next_state.set(UIState::Settings),
                     UIButtons::Resume => next_state.set(UIState::GameBoard),
-                    UIButtons::CreateBoard => next_state.set(UIState::GameBoardCreator),
+                    UIButtons::CreateBoard => next_state.set(UIState::GameBoard),
                     UIButtons::PauseMenu => next_state.set(UIState::PauseMenu),
 
                     // These are set up like this temporarily.  Later on I would like to add a

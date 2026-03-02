@@ -50,6 +50,7 @@ fn setup_main_menu
     -> Result<()>
 {
 
+    // Variables that are used across all the UI elements in this setup.
     let window = window_query.single()?;
     let path_for_image = "sprites/Square.png";
     let path_for_font = "fonts/Cinzel/Cinzel-Bold.ttf";
@@ -57,11 +58,13 @@ fn setup_main_menu
     let x_anchor = 50.0;
     let layer = 1;
 
-    let button_width_of_image = 30.0;
+    // Variables that are used only for the buttons in this setup.
+    let button_width = 30.0;
     let button_aspect_ratio = 120.0 / 20.0;
     let button_font_size = 0.02;
 
-    let title_width_of_image = 55.0;
+    // Variables only for the title label.
+    let title_width = 55.0;
     let title_aspect_ratio = 80.0 / 20.0;
     let title_font_size = 0.06;
 
@@ -74,7 +77,7 @@ fn setup_main_menu
         path_for_image,
         Vec2::new(x_anchor, 15.0),
         layer,
-        title_width_of_image,
+        title_width,
         title_aspect_ratio,
         Some(TextSpawn {
             content: "Pentago",
@@ -93,7 +96,7 @@ fn setup_main_menu
         path_for_image,
         Vec2::new(x_anchor, 45.0),
         layer,
-        button_width_of_image,
+        button_width,
         button_aspect_ratio,
         Some(TextSpawn {
             content: "Play",
@@ -112,7 +115,7 @@ fn setup_main_menu
         path_for_image,
         Vec2::new(x_anchor, 65.0),
         layer,
-        button_width_of_image,
+        button_width,
         button_aspect_ratio,
         Some(TextSpawn {
             content: "Settings",
@@ -131,7 +134,7 @@ fn setup_main_menu
         path_for_image,
         Vec2::new(x_anchor, 85.0),
         layer,
-        button_width_of_image,
+        button_width,
         button_aspect_ratio,
         Some(TextSpawn {
             content: "Exit Game",
@@ -154,6 +157,25 @@ fn setup_settings
 {
     let window = window_query.single()?;
 
+    // Back Button
+    spawn_ui_element(
+        &mut commands,
+        &asset_server,
+        window,
+        UISpawnTypes::Button(UIButtons::Back),
+        "sprites/Square.png",
+        Vec2::new(10.0, 5.0),
+        1,
+        15.0,
+        8.0 / 2.0,
+        Some(TextSpawn {
+            content: "Back",
+            font_path: "fonts/Cinzel/Cinzel-Bold.ttf",
+            font_size_scale: 0.015,
+            color: Color::WHITE,
+        })
+    );
+
     Ok(())
 }
 
@@ -167,6 +189,24 @@ fn setup_gameboard
 {
     let window = window_query.single()?;
 
+    // Pause Menu Button
+    spawn_ui_element(
+        &mut commands,
+        &asset_server,
+        window,
+        UISpawnTypes::Button(UIButtons::PauseMenu),
+        "sprites/Square.png",
+        Vec2::new(10.0, 5.0),
+        1,
+        15.0,
+        8.0 / 2.0,
+        Some(TextSpawn {
+            content: "Pause",
+            font_path: "fonts/Cinzel/Cinzel-Bold.ttf",
+            font_size_scale: 0.015,
+            color: Color::WHITE,
+        })
+    );
 
     Ok(())
 }
@@ -181,7 +221,43 @@ fn setup_gameboard_creator
 {
     let window = window_query.single()?;
 
+    // Back Button
+    spawn_ui_element(
+        &mut commands,
+        &asset_server,
+        window,
+        UISpawnTypes::Button(UIButtons::Back),
+        "sprites/Square.png",
+        Vec2::new(10.0, 5.0),
+        1,
+        15.0,
+        8.0 / 2.0,
+        Some(TextSpawn {
+            content: "Back",
+            font_path: "fonts/Cinzel/Cinzel-Bold.ttf",
+            font_size_scale: 0.015,
+            color: Color::WHITE,
+        })
+    );
 
+    // Create Board Button
+    spawn_ui_element(
+        &mut commands,
+        &asset_server,
+        window,
+        UISpawnTypes::Button(UIButtons::CreateBoard),
+        "sprites/Square.png",
+        Vec2::new(90.0, 90.0),
+        1,
+        15.0,
+        8.0 / 2.0,
+        Some(TextSpawn {
+            content: "Create Board",
+            font_path: "fonts/Cinzel/Cinzel-Bold.ttf",
+            font_size_scale: 0.015,
+            color: Color::WHITE,
+        })
+    );
 
     Ok(())
 }
@@ -194,14 +270,61 @@ fn setup_pause_menu
 )
     -> Result<()>
 {
+    // Variables that are used across all the UI elements in this setup.
     let window = window_query.single()?;
     let path_for_image = "sprites/Square.png";
     let path_for_font = "fonts/Cinzel/Cinzel-Bold.ttf";
-    let width_of_image = 30.0;
-    let aspect_ratio = 100.0 / 20.0;
-    let font_size = 0.02;
     let color_of_text = Color::WHITE;
+    let x_anchor = 50.0;
     let layer = 1;
+
+    // Variables that are used only for the buttons in this setup.
+    let button_width = 10.0;
+    let button_aspect_ratio = 100.0 / 20.0;
+    let button_font_size = 0.01;
+
+    // Variables only for the title label.
+    let pause_label_width = 15.0;
+    let pause_label_aspect_ratio = 80.0 / 20.0;
+    let pause_label_font_size = 0.015;
+
+    // Pause Label Button
+    spawn_ui_element(
+        &mut commands,
+        &asset_server,
+        window,
+        UISpawnTypes::Label(UILabels::Pause),
+        path_for_image,
+        Vec2::new(x_anchor, 35.0),
+        layer,
+        pause_label_width,
+        pause_label_aspect_ratio,
+        Some(TextSpawn {
+            content: "Pause Menu",
+            font_path: path_for_font,
+            font_size_scale: pause_label_font_size,
+            color: color_of_text,
+        })
+    );
+
+    // Resume Button
+    spawn_ui_element(
+        &mut commands,
+        &asset_server,
+        window,
+        UISpawnTypes::Button(UIButtons::Resume),
+        path_for_image,
+        Vec2::new(x_anchor, 45.0),
+        layer,
+        button_width,
+        button_aspect_ratio,
+        Some(TextSpawn {
+            content: "Resume",
+            font_path: path_for_font,
+            font_size_scale: button_font_size,
+            color: color_of_text,
+        })
+    );
 
     // Settings Button
     spawn_ui_element(
@@ -210,14 +333,52 @@ fn setup_pause_menu
         window,
         UISpawnTypes::Button(UIButtons::Settings),
         path_for_image,
-        Vec2::new(50.0, 60.0),
+        Vec2::new(x_anchor, 52.5),
         layer,
-        width_of_image,
-        aspect_ratio,
+        button_width,
+        button_aspect_ratio,
         Some(TextSpawn {
             content: "Settings",
             font_path: path_for_font,
-            font_size_scale: font_size,
+            font_size_scale: button_font_size,
+            color: color_of_text,
+        })
+    );
+
+    // Main Menu Button
+    spawn_ui_element(
+        &mut commands,
+        &asset_server,
+        window,
+        UISpawnTypes::Button(UIButtons::MainMenu),
+        path_for_image,
+        Vec2::new(x_anchor, 60.0),
+        layer,
+        button_width,
+        button_aspect_ratio,
+        Some(TextSpawn {
+            content: "Main Menu",
+            font_path: path_for_font,
+            font_size_scale: button_font_size,
+            color: color_of_text,
+        })
+    );
+
+    // Exit Game Button
+    spawn_ui_element(
+        &mut commands,
+        &asset_server,
+        window,
+        UISpawnTypes::Button(UIButtons::ExitGame),
+        path_for_image,
+        Vec2::new(x_anchor, 67.5),
+        layer,
+        button_width,
+        button_aspect_ratio,
+        Some(TextSpawn {
+            content: "Exit Game",
+            font_path: path_for_font,
+            font_size_scale: button_font_size,
             color: color_of_text,
         })
     );
