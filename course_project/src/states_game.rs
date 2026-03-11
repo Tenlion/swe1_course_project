@@ -48,7 +48,7 @@ fn setup_main_menu
     // Creating a window for the game that is set to borderless fullscreen, using the current monitor
     // that the application was opened in, and sets the resolution, refresh rate, and bit depth to
     // what the OS is currently set to.  I've set the window resizable to false because I want to
-    // ensure the aspect ratio of the images are maintained (I know there's a way to make the aspect
+    // ensure the aspect ratio of the images are maintained. I know there's a way to make the aspect
     // ratio stay the same across resizing, but I'm not implementing that atm - have to look more into it.
     let mut window = windows.single_mut()?;
     window.mode = WindowMode::BorderlessFullscreen(MonitorSelection::Current);
