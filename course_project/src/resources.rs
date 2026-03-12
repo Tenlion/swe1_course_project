@@ -1,13 +1,44 @@
 
 use bevy::prelude::*;
+use crate::spawns::UIButtons;
 use crate::states_ui::UIState;
 
 pub struct GameResources {}
 impl Plugin for GameResources {
     fn build(&self, app: &mut App) {
-        app.insert_resource(UIStateHistory::default());
+        app.init_resource::<ButtonChain>();
+        app.init_resource::<UIStateHistory>();
     }
 }
+
+// ---------------------------------------------------------------------------------------------- //
+// UI BUTTON CHAINING
+
+#[derive(Resource, Default)]
+pub struct ButtonChain {
+    chain: Vec<UIButtons>,
+}
+
+impl ButtonChain {
+
+    // Add button to the chain.
+    pub fn push(&mut self, button: UIButtons) {
+        self.chain.push(button);
+    }
+
+    // Clear the entire chain.
+    pub fn clear(&mut self) {
+        self.chain.clear();
+    }
+
+    // Return the chain as a slice so that it can be utilized in match statements.
+    pub fn as_slice(&self) -> &[UIButtons] {
+        self.chain.as_slice()
+    }
+}
+// ---------------------------------------------------------------------------------------------- //
+
+
 
 // ---------------------------------------------------------------------------------------------- //
 // UI STATE HISTORY

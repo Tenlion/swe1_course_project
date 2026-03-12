@@ -105,17 +105,12 @@ fn setup_gameboard_creator
 }
 
 // Cleanup procedure that occurs for a game state's exit procedure.
-fn cleanup_game_entities
-(
+fn cleanup_game_entities(
     mut commands: Commands,
-    entity_query: Query<(Entity, &SpawnTypes)>,
+    entity_query: Query<Entity, With<GameSpawnTypes>>,
 )
 {
-    for (entity, spawn_type) in entity_query.iter() {
-
-        match spawn_type {
-            SpawnTypes::Game(_) => { commands.entity(entity).despawn(); }
-            _ => {}
-        }
+    for entity in entity_query.iter() {
+        commands.entity(entity).despawn();
     }
 }

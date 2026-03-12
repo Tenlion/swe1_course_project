@@ -1,4 +1,3 @@
-
 use bevy::prelude::*;
 use crate::resources::UIStateHistory;
 use crate::spawns::*;
@@ -64,10 +63,10 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
 
     // Title Label
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Label(UILabels::Title),
+        &mut commands, &asset_server, window,
+        None,
+        None,
+        Some(UILabels::Title),
         path_for_image,
         Vec3::new(x_anchor, 15.0, layer),
         title_width,
@@ -82,10 +81,10 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
 
     // Play Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::Play),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::Play),
+        None,
+        None,
         path_for_image,
         Vec3::new(x_anchor, 45.0, layer),
         button_width,
@@ -100,10 +99,10 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
 
     // Settings Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::Settings),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::Settings),
+        None,
+        None,
         path_for_image,
         Vec3::new(x_anchor, 65.0, layer),
         button_width,
@@ -118,10 +117,10 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
 
     // Exit Game Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::ExitGame),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::ExitGame),
+        None,
+        None,
         path_for_image,
         Vec3::new(x_anchor, 85.0, layer),
         button_width,
@@ -142,10 +141,10 @@ fn setup_settings(mut commands: Commands, asset_server: Res<AssetServer>, window
 
     // Back Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::Back),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::Back),
+        None,
+        None,
         "sprites/Square.png",
         Vec3::new(10.0, 5.0, 1.0),
         15.0,
@@ -166,10 +165,10 @@ fn setup_gameboard(mut commands: Commands, asset_server: Res<AssetServer>, windo
 
     // Pause Menu Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::PauseMenu),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::PauseMenu),
+        None,
+        None,
         "sprites/Square.png",
         Vec3::new(10.0, 5.0, 1.0),
         15.0,
@@ -184,16 +183,16 @@ fn setup_gameboard(mut commands: Commands, asset_server: Res<AssetServer>, windo
 
     Ok(())
 }
-fn setup_gameboard_creator (mut commands: Commands, asset_server: Res<AssetServer>, window_query: Query<&Window>) -> Result<()> {
+fn setup_gameboard_creator(mut commands: Commands, asset_server: Res<AssetServer>, window_query: Query<&Window>) -> Result<()> {
 
     let window = window_query.single()?;
 
     // Back Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::Back),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::Back),
+        None,
+        None,
         "sprites/Square.png",
         Vec3::new(10.0, 5.0, 1.0),
         15.0,
@@ -208,10 +207,10 @@ fn setup_gameboard_creator (mut commands: Commands, asset_server: Res<AssetServe
 
     // Create Board Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::CreateBoard),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::CreateBoard),
+        None,
+        None,
         "sprites/Square.png",
         Vec3::new(90.0, 90.0, 1.0),
         15.0,
@@ -226,7 +225,7 @@ fn setup_gameboard_creator (mut commands: Commands, asset_server: Res<AssetServe
 
     Ok(())
 }
-fn setup_pause_menu (mut commands: Commands, asset_server: Res<AssetServer>, window_query: Query<&Window>) -> Result<()> {
+fn setup_pause_menu(mut commands: Commands, asset_server: Res<AssetServer>, window_query: Query<&Window>) -> Result<()> {
 
     // Universal Pause UI Variables
     let window = window_query.single()?;
@@ -252,10 +251,10 @@ fn setup_pause_menu (mut commands: Commands, asset_server: Res<AssetServer>, win
 
     // Pause Menu Container
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Container(UIContainers::PauseMenu),
+        &mut commands, &asset_server, window,
+        None,
+        Some(UIContainers::PauseMenu),
+        None,
         image_for_container,
         Vec3::new(x_anchor, 40.0, container_layer),
         20.0,
@@ -265,10 +264,10 @@ fn setup_pause_menu (mut commands: Commands, asset_server: Res<AssetServer>, win
 
     // Pause Menu Label
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Label(UILabels::Pause),
+        &mut commands, &asset_server, window,
+        None,
+        None,
+        Some(UILabels::Pause),
         path_for_image,
         Vec3::new(x_anchor, 35.0, layer),
         pause_label_width,
@@ -283,10 +282,10 @@ fn setup_pause_menu (mut commands: Commands, asset_server: Res<AssetServer>, win
 
     // Resume Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::Resume),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::Resume),
+        None,
+        None,
         path_for_image,
         Vec3::new(x_anchor, 45.0, layer),
         button_width,
@@ -301,10 +300,10 @@ fn setup_pause_menu (mut commands: Commands, asset_server: Res<AssetServer>, win
 
     // Settings Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::Settings),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::Settings),
+        None,
+        None,
         path_for_image,
         Vec3::new(x_anchor, 52.5, layer),
         button_width,
@@ -319,10 +318,10 @@ fn setup_pause_menu (mut commands: Commands, asset_server: Res<AssetServer>, win
 
     // Main Menu Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::MainMenu),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::MainMenu),
+        None,
+        None,
         path_for_image,
         Vec3::new(x_anchor, 60.0, layer),
         button_width,
@@ -337,10 +336,10 @@ fn setup_pause_menu (mut commands: Commands, asset_server: Res<AssetServer>, win
 
     // Exit Game Button
     spawn_ui_element(
-        &mut commands,
-        &asset_server,
-        window,
-        UISpawnTypes::Button(UIButtons::ExitGame),
+        &mut commands, &asset_server, window,
+        Some(UIButtons::ExitGame),
+        None,
+        None,
         path_for_image,
         Vec3::new(x_anchor, 67.5, layer),
         button_width,
@@ -357,7 +356,7 @@ fn setup_pause_menu (mut commands: Commands, asset_server: Res<AssetServer>, win
 }
 
 // UI STATE RECORDERS
-// Functions that add to the UI state history when a scene a UI state has been changed.
+// Functions that add to the UI state history when a UI state has been changed.
 fn record_main_menu_exit(mut history: ResMut<UIStateHistory>) {
     history.push(UIState::MainMenu);
 }
@@ -375,12 +374,15 @@ fn record_pause_menu_exit(mut history: ResMut<UIStateHistory>) {
 }
 
 // TRASH COLLECTOR
-fn cleanup_ui_entities(mut commands: Commands, entity_query: Query<(Entity, &SpawnTypes)>) {
-    for (entity, spawn_type) in entity_query.iter() {
-
-        match spawn_type {
-            SpawnTypes::UI(_) => { commands.entity(entity).despawn(); }
-            _ => {}
-        }
-    }
+fn cleanup_ui_entities
+(
+    mut commands: Commands,
+    button_query: Query<Entity, With<UIButtons>>,
+    container_query: Query<Entity, With<UIContainers>>,
+    label_query: Query<Entity, With<UILabels>>,
+)
+{
+    for entity in button_query.iter()       { commands.entity(entity).despawn(); }
+    for entity in container_query.iter()    { commands.entity(entity).despawn(); }
+    for entity in label_query.iter()        { commands.entity(entity).despawn(); }
 }
