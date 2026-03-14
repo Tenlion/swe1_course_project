@@ -38,8 +38,8 @@ fn setup(
 {
 
     let mut window = windows.single_mut()?;
-    window.mode = WindowMode::BorderlessFullscreen(MonitorSelection::Current);
-    window.resizable = false;
+    // window.mode = WindowMode::BorderlessFullscreen(MonitorSelection::Current);
+    // window.resizable = false;
 
     let camera_position = Vec3::new(window.width() / 2.0, window.height() / 2.0, 0.0);
 

@@ -7,7 +7,7 @@ use crate::states::State;
 pub struct Spawns {}
 impl Plugin for Spawns {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (resize_text_spawn, handle_ui_button_interactions).chain());
+        app.add_systems(Update, (resize, handle_ui_button_interactions).chain());
     }
 }
 
@@ -49,11 +49,18 @@ pub struct TextSpawn {
     pub color: Color,
 }
 
+// This is the component that is configured when the window size is changed (or if some function
+// wants to use it to change the size of UI elements at runtime).  Position is part of this since
+// the pixel position of something is changed when the window gets messed with.
+#[derive(Component)]
+pub struct Sizer {
+    pub position: Vec3,
+    pub size_of_element: f32,
+    pub aspect_ratio: Option<f32>,
+}
 
 
-
-pub fn spawn_ui_element
-(
+pub fn spawn_ui_element(
     commands: &mut Commands,
     asset_server: &AssetServer,
     window: &Window,
@@ -74,21 +81,27 @@ pub fn spawn_ui_element
     -> Entity
 {
 
-    // Calculating UI component size (relative to width of window).
+    // Calculating UI component size (relative to width of window and aspect_ratio).
+    let width_px = window.width() * (size_of_element / 100.0);
+    let height_px = width_px / aspect_ratio.unwrap_or(1.0);
     let width_half_size = size_of_element / 2.0;
-    let height_half_size = width_half_size / aspect_ratio.unwrap_or(1.0);
+    let height_half_size = (height_px / window.height()) * 100.0 / 2.0;
 
     // Assigning UI attributes - image, position, layer, and size.
     let mut entity = commands.spawn((
         Button,
         ZIndex(position.z as i32),
+        Sizer {
+            position,
+            size_of_element,
+            aspect_ratio,
+        },
         Node {
             position_type: PositionType::Absolute,
             left: Val::Percent(position.x - width_half_size),
             top: Val::Percent(position.y - height_half_size),
             width: Val::Percent(size_of_element),
-            height: Val::Auto,
-            aspect_ratio,
+            height: Val::Px(height_px),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
             ..default()
@@ -137,8 +150,7 @@ pub fn spawn_ui_element
 // SPAWN CONFIRMATION
 // Used to create confirmation dialogs that can have different text within them based on what's
 // passed into dialog_text.
-pub fn spawn_confirmation
-(
+pub fn spawn_confirmation(
     commands: &mut Commands,
     asset_server: &AssetServer,
     window: &Window,
@@ -169,7 +181,7 @@ pub fn spawn_confirmation
         Some(Containers::Confirmation),
         Some(Labels::Confirmation),
         None,
-        Vec3::new(50.0, 40.0, 4.0),
+        Vec3::new(50.0, 35.0, 4.0),
         28.0,
         Some(100.0 / 20.0),
         Some(TextSpawn {
@@ -189,7 +201,7 @@ pub fn spawn_confirmation
         Some(Containers::Confirmation),
         None,
         Some("sprites/Square.png"),
-        Vec3::new(45.0, 50.0, 4.0),
+        Vec3::new(45.0, 45.0, 4.0),
         5.0,
         Some(100.0 / 50.0),
         Some(TextSpawn {
@@ -209,7 +221,7 @@ pub fn spawn_confirmation
         Some(Containers::Confirmation),
         None,
         Some("sprites/Square.png"),
-        Vec3::new(55.0, 50.0, 4.0),
+        Vec3::new(55.0, 45.0, 4.0),
         5.0,
         Some(100.0 / 50.0),
         Some(TextSpawn {
@@ -221,10 +233,7 @@ pub fn spawn_confirmation
     );
 }
 
-// SPAWN PAUSE
-//
-pub fn spawn_pause
-(
+pub fn spawn_pause(
     commands: &mut Commands,
     asset_server: &AssetServer,
     window: &Window,
@@ -256,7 +265,7 @@ pub fn spawn_pause
         Some(Containers::Pause),
         None,
         image_for_container,
-        Vec3::new(x_anchor, 40.0, container_layer),
+        Vec3::new(x_anchor, 50.0, container_layer),
         20.0,
         Some(20.0 / 28.0),
         None,
@@ -271,7 +280,7 @@ pub fn spawn_pause
         Some(Containers::Pause),
         Some(Labels::Pause),
         None,
-        Vec3::new(x_anchor, 35.0, layer),
+        Vec3::new(x_anchor, 32.5, layer),
         pause_label_width,
         pause_label_aspect_ratio,
         Some(TextSpawn {
@@ -291,7 +300,7 @@ pub fn spawn_pause
         Some(Containers::Pause),
         None,
         path_for_image,
-        Vec3::new(x_anchor, 45.0, layer),
+        Vec3::new(x_anchor, 40.0, layer),
         button_width,
         button_aspect_ratio,
         Some(TextSpawn {
@@ -311,7 +320,7 @@ pub fn spawn_pause
         Some(Containers::Pause),
         None,
         path_for_image,
-        Vec3::new(x_anchor, 52.5, layer),
+        Vec3::new(x_anchor, 47.5, layer),
         button_width,
         button_aspect_ratio,
         Some(TextSpawn {
@@ -331,7 +340,7 @@ pub fn spawn_pause
         Some(Containers::Pause),
         None,
         path_for_image,
-        Vec3::new(x_anchor, 60.0, layer),
+        Vec3::new(x_anchor, 55.0, layer),
         button_width,
         button_aspect_ratio,
         Some(TextSpawn {
@@ -351,7 +360,7 @@ pub fn spawn_pause
         Some(Containers::Pause),
         None,
         path_for_image,
-        Vec3::new(x_anchor, 67.5, layer),
+        Vec3::new(x_anchor, 62.5, layer),
         button_width,
         button_aspect_ratio,
         Some(TextSpawn {
@@ -379,36 +388,53 @@ pub fn despawn_container(
     }
 }
 
-// RESIZE_TEXT_SPAWN
+// RESIZE
 // This will resize text to always be relative to a text's set scaling factor and the
 // window's current width.  I say "current" since this system is running every frame but its
-// code will only trigger when the window gets resized.
-pub fn resize_text_spawn
-(
-    mut text_query: Query<(&mut TextFont, &TextSpawn)>,
+// code will only trigger when the window gets resized.  This will also resize UI elements
+// according to the window width and the aspect ratio of the element's Sizer component.
+pub fn resize(
     window_query: Query<&Window>,
+    mut text_query: Query<(&mut TextFont, &TextSpawn)>,
+    mut node_query: Query<(&mut Node, &Sizer)>,
     mut resize_reader: MessageReader<WindowResized>,
 )
     -> Result<()>
 {
     for _ in resize_reader.read() {
+
         let window = window_query.single()?;
+
+        // Reposition and resize all UI elements.
+        for (mut node, element) in node_query.iter_mut() {
+            let width_px = window.width() * (element.size_of_element / 100.0);
+            let height_px = width_px / element.aspect_ratio.unwrap_or(1.0);
+            let height_half_size = (height_px / window.height()) * 100.0 / 2.0;
+            let width_half_size = element.size_of_element / 2.0;
+
+            node.left = Val::Percent(element.position.x - width_half_size);
+            node.top  = Val::Percent(element.position.y - height_half_size);
+            node.width = Val::Percent(element.size_of_element);
+            node.height = Val::Px(height_px);
+        }
+
+        // Resize all text.
         for (mut text_font, text_spawn) in text_query.iter_mut() {
             text_font.font_size = window.width() * text_spawn.font_size_scale;
         }
     }
+
     Ok(())
 }
 
 // INTERACTION EVENTS FOR UI BUTTONS
 // Buttons are programmed out based on enum type and will direct state transitions and
 // trigger confirmation dialogs where appropriate.
-pub fn handle_ui_button_interactions
-(
-    interaction_query: Query<(&Interaction, &Buttons), Changed<Interaction>>,
+pub fn handle_ui_button_interactions(
     asset_server: Res<AssetServer>,
     window_query: Query<&Window>,
     container_query: Query<(Entity, &Containers)>,
+    interaction_query: Query<(&Interaction, &Buttons), Changed<Interaction>>,
     mut commands: Commands,
     mut button_chain: ResMut<ButtonChain>,
     mut next_state: ResMut<NextState<State>>,

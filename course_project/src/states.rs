@@ -54,11 +54,11 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
     // Title Label
     spawn_ui_element(
         &mut commands, &asset_server, window,
-        None,
+        Some(Buttons::MainMenu),
         None,
         Some(Labels::Title),
         None,
-        Vec3::new(x_anchor, 15.0, layer),
+        Vec3::new(x_anchor, 25.0, layer),
         title_width,
         title_aspect_ratio,
         Some(TextSpawn {
@@ -211,6 +211,18 @@ fn setup_gameboard_creator(mut commands: Commands, asset_server: Res<AssetServer
             font_size_scale: 0.015,
             color: Color::WHITE,
         })
+    );
+
+    spawn_ui_element(
+        &mut commands, &asset_server, window,
+        Some(Buttons::MainMenu),
+        None,
+        None,
+        Some("sprites/Untitled.png"),
+        Vec3::new(50.0, 50.0, 1.0),
+        15.0,
+        Some(0.33),
+        None,
     );
 
     Ok(())
