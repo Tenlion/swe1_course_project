@@ -1,4 +1,6 @@
 
+use std::env;
+use std::process::Command;
 use bevy::prelude::*;
 use bevy::window::WindowResized;
 use crate::resources::{ButtonChain, StateHistory};
@@ -29,6 +31,10 @@ pub enum Buttons {
     Pause,
     Yes,
     No,
+    MS1,
+    MS2,
+    MS3,
+    MS4
 }
 
 #[derive(Component, PartialEq)]
@@ -498,6 +504,12 @@ pub fn handle_ui_button_interactions(
                 (_, Buttons::Play)        => { button_chain.clear(); next_state.set(State::GameBoardCreator); },
                 (_, Buttons::Settings)    => { button_chain.clear(); next_state.set(State::Settings); },
                 (_, Buttons::CreateBoard) => { button_chain.clear(); next_state.set(State::GameBoard); },
+
+                (_, Buttons::MS1) => { Command::new("./microservices/text_converter_linux86_64").status().ok(); },
+                (_, Buttons::MS2) => { Command::new("./microservices/path_obtainer_linux86_64").status().ok(); },
+                (_, Buttons::MS3) => { Command::new("./microservices/base64_converter_linux86_64").status().ok(); },
+                (_, Buttons::MS4) => { Command::new("./microservices/config_saver_linux86_64").status().ok(); },
+
 
                 _ => { button_chain.clear(); }
             }

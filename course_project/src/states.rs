@@ -62,7 +62,7 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
         title_width,
         title_aspect_ratio,
         Some(TextSpawn {
-            content: "Pentago",
+            content: "Title",
             font_path: path_for_font,
             font_size_scale: title_font_size,
             color: color_of_text,
@@ -119,6 +119,78 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
             content: "Exit Game",
             font_path: path_for_font,
             font_size_scale: button_font_size,
+            color: color_of_text,
+        })
+    );
+
+    // Text Converter
+    spawn_ui_element(
+        &mut commands, &asset_server, window,
+        Some(Buttons::MS1),
+        None,
+        None,
+        Some("sprites/DarkSquare.png"),
+        Vec3::new(12.5, 10.0, layer),
+        20.0,
+        Some(100.0 / 25.0),
+        Some(TextSpawn {
+            content: "Text Converter",
+            font_path: path_for_font,
+            font_size_scale: 0.015,
+            color: color_of_text,
+        })
+    );
+
+    // Path Obtainer
+    spawn_ui_element(
+        &mut commands, &asset_server, window,
+        Some(Buttons::MS2),
+        None,
+        None,
+        Some("sprites/DarkSquare.png"),
+        Vec3::new(37.5, 10.0, layer),
+        20.0,
+        Some(100.0 / 25.0),
+        Some(TextSpawn {
+            content: "Path Obtainer",
+            font_path: path_for_font,
+            font_size_scale: 0.015,
+            color: color_of_text,
+        })
+    );
+
+    // Base64 Converter
+    spawn_ui_element(
+        &mut commands, &asset_server, window,
+        Some(Buttons::MS3),
+        None,
+        None,
+        Some("sprites/DarkSquare.png"),
+        Vec3::new(62.5, 10.0, layer),
+        20.0,
+        Some(100.0 / 25.0),
+        Some(TextSpawn {
+            content: "Base64 Converter",
+            font_path: path_for_font,
+            font_size_scale: 0.015,
+            color: color_of_text,
+        })
+    );
+
+    // Config Saver
+    spawn_ui_element(
+        &mut commands, &asset_server, window,
+        Some(Buttons::MS4),
+        None,
+        None,
+        Some("sprites/DarkSquare.png"),
+        Vec3::new(87.5, 10.0, layer),
+        20.0,
+        Some(100.0 / 25.0),
+        Some(TextSpawn {
+            content: "Config Saver",
+            font_path: path_for_font,
+            font_size_scale: 0.015,
             color: color_of_text,
         })
     );
