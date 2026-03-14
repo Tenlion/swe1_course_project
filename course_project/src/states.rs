@@ -1,28 +1,29 @@
+
 use bevy::prelude::*;
-use crate::resources::UIStateHistory;
+use crate::resources::StateHistory;
 use crate::spawns::*;
 
-pub struct StatesForUI {}
-impl Plugin for StatesForUI {
+pub struct States {}
+impl Plugin for States {
     fn build(&self, app: &mut App) {
-        app.init_state::<UIState>();
+        app.init_state::<State>();
 
-        app.add_systems(OnEnter(UIState::MainMenu), setup_main_menu);
-        app.add_systems(OnExit(UIState::MainMenu), (record_main_menu_exit, cleanup_ui_entities).chain());
+        app.add_systems(OnEnter(State::MainMenu), setup_main_menu);
+        app.add_systems(OnExit(State::MainMenu), (record_main_menu_exit, cleanup_ui_entities).chain());
 
-        app.add_systems(OnEnter(UIState::Settings), setup_settings);
-        app.add_systems(OnExit(UIState::Settings), (record_settings_exit, cleanup_ui_entities).chain());
+        app.add_systems(OnEnter(State::Settings), setup_settings);
+        app.add_systems(OnExit(State::Settings), (record_settings_exit, cleanup_ui_entities).chain());
 
-        app.add_systems(OnEnter(UIState::GameBoardCreator), setup_gameboard_creator);
-        app.add_systems(OnExit(UIState::GameBoardCreator), (record_gameboard_creator_exit, cleanup_ui_entities).chain());
+        app.add_systems(OnEnter(State::GameBoardCreator), setup_gameboard_creator);
+        app.add_systems(OnExit(State::GameBoardCreator), (record_gameboard_creator_exit, cleanup_ui_entities).chain());
 
-        app.add_systems(OnEnter(UIState::GameBoard), setup_gameboard);
-        app.add_systems(OnExit(UIState::GameBoard), (record_gameboard_exit, cleanup_ui_entities).chain());
+        app.add_systems(OnEnter(State::GameBoard), setup_gameboard);
+        app.add_systems(OnExit(State::GameBoard), (record_gameboard_exit, cleanup_ui_entities).chain());
     }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
-pub enum UIState {
+pub enum State {
     #[default]
     MainMenu,
     Settings,
@@ -33,6 +34,8 @@ pub enum UIState {
 // UI SETUPS
 fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, window_query: Query<&Window>) -> Result<()> {
 
+
+    // Defining variables for UI elements.
     let window = window_query.single()?;
     let path_for_image: Option<&'static str> = Some("sprites/Square.png");
     let path_for_font = "fonts/Cinzel/Cinzel-Bold.ttf";
@@ -53,7 +56,7 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
         &mut commands, &asset_server, window,
         None,
         None,
-        Some(UILabels::Title),
+        Some(Labels::Title),
         None,
         Vec3::new(x_anchor, 15.0, layer),
         title_width,
@@ -69,7 +72,7 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
     // Play Button
     spawn_ui_element(
         &mut commands, &asset_server, window,
-        Some(UIButtons::Play),
+        Some(Buttons::Play),
         None,
         None,
         path_for_image,
@@ -87,7 +90,7 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
     // Settings Button
     spawn_ui_element(
         &mut commands, &asset_server, window,
-        Some(UIButtons::Settings),
+        Some(Buttons::Settings),
         None,
         None,
         path_for_image,
@@ -105,7 +108,7 @@ fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>, windo
     // Exit Game Button
     spawn_ui_element(
         &mut commands, &asset_server, window,
-        Some(UIButtons::ExitGame),
+        Some(Buttons::ExitGame),
         None,
         None,
         path_for_image,
@@ -129,7 +132,7 @@ fn setup_settings(mut commands: Commands, asset_server: Res<AssetServer>, window
     // Back Button
     spawn_ui_element(
         &mut commands, &asset_server, window,
-        Some(UIButtons::Back),
+        Some(Buttons::Back),
         None,
         None,
         Some("sprites/Square.png"),
@@ -153,7 +156,7 @@ fn setup_gameboard(mut commands: Commands, asset_server: Res<AssetServer>, windo
     // Pause Menu Button
     spawn_ui_element(
         &mut commands, &asset_server, window,
-        Some(UIButtons::Pause),
+        Some(Buttons::Pause),
         None,
         None,
         Some("sprites/Square.png"),
@@ -177,7 +180,7 @@ fn setup_gameboard_creator(mut commands: Commands, asset_server: Res<AssetServer
     // Back Button
     spawn_ui_element(
         &mut commands, &asset_server, window,
-        Some(UIButtons::Back),
+        Some(Buttons::Back),
         None,
         None,
         Some("sprites/Square.png"),
@@ -195,7 +198,7 @@ fn setup_gameboard_creator(mut commands: Commands, asset_server: Res<AssetServer
     // Create Board Button
     spawn_ui_element(
         &mut commands, &asset_server, window,
-        Some(UIButtons::CreateBoard),
+        Some(Buttons::CreateBoard),
         None,
         None,
         Some("sprites/Square.png"),
@@ -214,18 +217,18 @@ fn setup_gameboard_creator(mut commands: Commands, asset_server: Res<AssetServer
 }
 
 // UI STATE RECORDERS
-fn record_main_menu_exit(mut history: ResMut<UIStateHistory>) { history.push(UIState::MainMenu); }
-fn record_settings_exit(mut history: ResMut<UIStateHistory>) { history.push(UIState::Settings); }
-fn record_gameboard_creator_exit(mut history: ResMut<UIStateHistory>) { history.push(UIState::GameBoardCreator); }
-fn record_gameboard_exit(mut history: ResMut<UIStateHistory>) { history.push(UIState::GameBoard); }
+fn record_main_menu_exit(mut history: ResMut<StateHistory>) { history.push(State::MainMenu); }
+fn record_settings_exit(mut history: ResMut<StateHistory>) { history.push(State::Settings); }
+fn record_gameboard_exit(mut history: ResMut<StateHistory>) { history.push(State::GameBoard); }
+fn record_gameboard_creator_exit(mut history: ResMut<StateHistory>) { history.push(State::GameBoardCreator); }
 
 // TRASH COLLECTOR
 fn cleanup_ui_entities
 (
     mut commands: Commands,
-    button_query: Query<Entity, With<UIButtons>>,
-    container_query: Query<Entity, With<UIContainers>>,
-    label_query: Query<Entity, With<UILabels>>,
+    button_query: Query<Entity, With<Buttons>>,
+    container_query: Query<Entity, With<Containers>>,
+    label_query: Query<Entity, With<Labels>>,
 )
 {
     for entity in button_query.iter()       { commands.entity(entity).despawn(); }

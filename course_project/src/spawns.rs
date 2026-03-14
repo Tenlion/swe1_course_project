@@ -1,7 +1,8 @@
+
 use bevy::prelude::*;
 use bevy::window::WindowResized;
-use crate::resources::{ButtonChain, UIStateHistory};
-use crate::states_ui::UIState;
+use crate::resources::{ButtonChain, StateHistory};
+use crate::states::State;
 
 pub struct Spawns {}
 impl Plugin for Spawns {
@@ -11,13 +12,13 @@ impl Plugin for Spawns {
 }
 
 #[derive(Component, PartialEq)]
-pub enum UIContainers {
+pub enum Containers {
     Pause,
     Confirmation,
 }
 
 #[derive(Component, PartialEq, Clone)]
-pub enum UIButtons {
+pub enum Buttons {
     Play,
     Settings,
     ExitGame,
@@ -31,22 +32,10 @@ pub enum UIButtons {
 }
 
 #[derive(Component, PartialEq)]
-pub enum UILabels {
+pub enum Labels {
     Title,
     Pause,
     Confirmation,
-}
-
-#[derive(Component, PartialEq)]
-pub enum GameSpawnTypes {
-    Board,
-    Subboard,
-    Node,
-}
-
-#[derive(Component, PartialEq)]
-pub enum CameraSpawns {
-    CenteredOnWindow,
 }
 
 // This component is always built into other elements - or at least it should be, using it
@@ -62,29 +51,15 @@ pub struct TextSpawn {
 
 
 
-pub fn spawn_camera
-(
-    commands: &mut Commands,
-    position: Vec3,
-)
-{
-    commands.spawn((
-        Camera2d,
-        CameraSpawns::CenteredOnWindow,
-        Transform::from_translation(position)
-    ));
-}
-
-
 
 pub fn spawn_ui_element
 (
     commands: &mut Commands,
     asset_server: &AssetServer,
     window: &Window,
-    ui_button: Option<UIButtons>,
-    ui_container: Option<UIContainers>,
-    ui_label: Option<UILabels>,
+    ui_button: Option<Buttons>,
+    ui_container: Option<Containers>,
+    ui_label: Option<Labels>,
     path_for_image: Option<&'static str>,   // PATH_FOR_IMAGE : This takes in the file path for the image you're trying to use for the UI element.
     position: Vec3,                         // POSITION : Percentage based with origin centered at the top left of the window.  Z values should be discrete.
     size_of_element: f32,                   // SIZE_OF_ELEMENT : Size is based on the width of the window and is percentage based.
@@ -159,6 +134,9 @@ pub fn spawn_ui_element
     entity.id()
 }
 
+// SPAWN CONFIRMATION
+// Used to create confirmation dialogs that can have different text within them based on what's
+// passed into dialog_text.
 pub fn spawn_confirmation
 (
     commands: &mut Commands,
@@ -173,7 +151,7 @@ pub fn spawn_confirmation
         asset_server,
         window,
         None,
-        Some(UIContainers::Confirmation),
+        Some(Containers::Confirmation),
         None,
         Some("sprites/DarkSquare.png"),
         Vec3::new(50.0, 40.0, 3.0),
@@ -188,8 +166,8 @@ pub fn spawn_confirmation
         asset_server,
         window,
         None,
-        Some(UIContainers::Confirmation),
-        Some(UILabels::Confirmation),
+        Some(Containers::Confirmation),
+        Some(Labels::Confirmation),
         None,
         Vec3::new(50.0, 40.0, 4.0),
         28.0,
@@ -207,8 +185,8 @@ pub fn spawn_confirmation
         commands,
         asset_server,
         window,
-        Some(UIButtons::Yes),
-        Some(UIContainers::Confirmation),
+        Some(Buttons::Yes),
+        Some(Containers::Confirmation),
         None,
         Some("sprites/Square.png"),
         Vec3::new(45.0, 50.0, 4.0),
@@ -227,8 +205,8 @@ pub fn spawn_confirmation
         commands,
         asset_server,
         window,
-        Some(UIButtons::No),
-        Some(UIContainers::Confirmation),
+        Some(Buttons::No),
+        Some(Containers::Confirmation),
         None,
         Some("sprites/Square.png"),
         Vec3::new(55.0, 50.0, 4.0),
@@ -243,6 +221,8 @@ pub fn spawn_confirmation
     );
 }
 
+// SPAWN PAUSE
+//
 pub fn spawn_pause
 (
     commands: &mut Commands,
@@ -273,7 +253,7 @@ pub fn spawn_pause
         asset_server,
         window,
         None,
-        Some(UIContainers::Pause),
+        Some(Containers::Pause),
         None,
         image_for_container,
         Vec3::new(x_anchor, 40.0, container_layer),
@@ -288,8 +268,8 @@ pub fn spawn_pause
         asset_server,
         window,
         None,
-        Some(UIContainers::Pause),
-        Some(UILabels::Pause),
+        Some(Containers::Pause),
+        Some(Labels::Pause),
         None,
         Vec3::new(x_anchor, 35.0, layer),
         pause_label_width,
@@ -307,8 +287,8 @@ pub fn spawn_pause
         commands,
         asset_server,
         window,
-        Some(UIButtons::Resume),
-        Some(UIContainers::Pause),
+        Some(Buttons::Resume),
+        Some(Containers::Pause),
         None,
         path_for_image,
         Vec3::new(x_anchor, 45.0, layer),
@@ -327,8 +307,8 @@ pub fn spawn_pause
         commands,
         asset_server,
         window,
-        Some(UIButtons::Settings),
-        Some(UIContainers::Pause),
+        Some(Buttons::Settings),
+        Some(Containers::Pause),
         None,
         path_for_image,
         Vec3::new(x_anchor, 52.5, layer),
@@ -347,8 +327,8 @@ pub fn spawn_pause
         commands,
         asset_server,
         window,
-        Some(UIButtons::MainMenu),
-        Some(UIContainers::Pause),
+        Some(Buttons::MainMenu),
+        Some(Containers::Pause),
         None,
         path_for_image,
         Vec3::new(x_anchor, 60.0, layer),
@@ -367,8 +347,8 @@ pub fn spawn_pause
         commands,
         asset_server,
         window,
-        Some(UIButtons::ExitGame),
-        Some(UIContainers::Pause),
+        Some(Buttons::ExitGame),
+        Some(Containers::Pause),
         None,
         path_for_image,
         Vec3::new(x_anchor, 67.5, layer),
@@ -389,8 +369,8 @@ pub fn spawn_pause
 // this function.
 pub fn despawn_container(
     commands: &mut Commands,
-    container: UIContainers,
-    container_query: &Query<(Entity, &UIContainers)>,
+    container: Containers,
+    container_query: &Query<(Entity, &Containers)>,
 ) {
     for (entity, ui_container) in container_query.iter() {
         if *ui_container == container {
@@ -425,14 +405,14 @@ pub fn resize_text_spawn
 // trigger confirmation dialogs where appropriate.
 pub fn handle_ui_button_interactions
 (
-    interaction_query: Query<(&Interaction, &UIButtons), Changed<Interaction>>,
+    interaction_query: Query<(&Interaction, &Buttons), Changed<Interaction>>,
     asset_server: Res<AssetServer>,
     window_query: Query<&Window>,
-    container_query: Query<(Entity, &UIContainers)>,
+    container_query: Query<(Entity, &Containers)>,
     mut commands: Commands,
     mut button_chain: ResMut<ButtonChain>,
-    mut next_state: ResMut<NextState<UIState>>,
-    mut state_history: ResMut<UIStateHistory>,
+    mut next_state: ResMut<NextState<State>>,
+    mut state_history: ResMut<StateHistory>,
     mut app_exit: MessageWriter<AppExit>,
 )
     -> Result<()>
@@ -443,55 +423,55 @@ pub fn handle_ui_button_interactions
 
             match (button_chain.as_slice(), button) {
 
-                ([UIButtons::MainMenu], UIButtons::Yes) => {
+                ([Buttons::MainMenu], Buttons::Yes) => {
                     button_chain.clear();
-                    despawn_container(&mut commands, UIContainers::Confirmation, &container_query);
+                    despawn_container(&mut commands, Containers::Confirmation, &container_query);
                     state_history.clear();
-                    next_state.set(UIState::MainMenu);
+                    next_state.set(State::MainMenu);
                 },
 
-                ([UIButtons::ExitGame], UIButtons::Yes) => {
+                ([Buttons::ExitGame], Buttons::Yes) => {
                     button_chain.clear();
-                    despawn_container(&mut commands, UIContainers::Confirmation, &container_query);
+                    despawn_container(&mut commands, Containers::Confirmation, &container_query);
                     app_exit.write(AppExit::Success);
                 },
 
-                ([], UIButtons::MainMenu) => {
+                ([], Buttons::MainMenu) => {
                     let window = window_query.single()?;
                     spawn_confirmation(&mut commands, &asset_server, &window, "End the board and navigate to the Main Menu?");
-                    button_chain.push(UIButtons::MainMenu);
+                    button_chain.push(Buttons::MainMenu);
                 },
 
-                ([], UIButtons::ExitGame) => {
+                ([], Buttons::ExitGame) => {
                     let window = window_query.single()?;
                     spawn_confirmation(&mut commands, &asset_server, &window, "Close the program and exit the game?");
-                    button_chain.push(UIButtons::ExitGame);
+                    button_chain.push(Buttons::ExitGame);
                 },
 
-                (_, UIButtons::No) => {
+                (_, Buttons::No) => {
                     button_chain.clear();
-                    despawn_container(&mut commands, UIContainers::Confirmation, &container_query);
+                    despawn_container(&mut commands, Containers::Confirmation, &container_query);
                 },
 
-                (_, UIButtons::Back) => {
+                (_, Buttons::Back) => {
                     button_chain.clear();
-                    let previous_state = state_history.pop().unwrap_or(UIState::MainMenu);
+                    let previous_state = state_history.pop().unwrap_or(State::MainMenu);
                     next_state.set(previous_state);
                 },
 
-                (_, UIButtons::Pause)   => {
+                (_, Buttons::Pause)   => {
                     let window = window_query.single()?;
                     spawn_pause(&mut commands, &asset_server, &window);
                 },
 
-                (_, UIButtons::Resume)      => {
+                (_, Buttons::Resume)      => {
                     button_chain.clear();
-                    despawn_container(&mut commands, UIContainers::Pause, &container_query);
+                    despawn_container(&mut commands, Containers::Pause, &container_query);
                 },
 
-                (_, UIButtons::Play)        => { button_chain.clear(); next_state.set(UIState::GameBoardCreator); },
-                (_, UIButtons::Settings)    => { button_chain.clear(); next_state.set(UIState::Settings); },
-                (_, UIButtons::CreateBoard) => { button_chain.clear(); next_state.set(UIState::GameBoard); },
+                (_, Buttons::Play)        => { button_chain.clear(); next_state.set(State::GameBoardCreator); },
+                (_, Buttons::Settings)    => { button_chain.clear(); next_state.set(State::Settings); },
+                (_, Buttons::CreateBoard) => { button_chain.clear(); next_state.set(State::GameBoard); },
 
                 _ => { button_chain.clear(); }
             }

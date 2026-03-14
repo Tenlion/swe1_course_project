@@ -1,13 +1,13 @@
 
 use bevy::prelude::*;
-use crate::spawns::UIButtons;
-use crate::states_ui::UIState;
+use crate::spawns::Buttons;
+use crate::states::State;
 
-pub struct GameResources {}
-impl Plugin for GameResources {
+pub struct Resources {}
+impl Plugin for Resources {
     fn build(&self, app: &mut App) {
         app.init_resource::<ButtonChain>();
-        app.init_resource::<UIStateHistory>();
+        app.init_resource::<StateHistory>();
     }
 }
 
@@ -16,13 +16,13 @@ impl Plugin for GameResources {
 
 #[derive(Resource, Default)]
 pub struct ButtonChain {
-    chain: Vec<UIButtons>,
+    chain: Vec<Buttons>,
 }
 
 impl ButtonChain {
 
     // Add button to the chain.
-    pub fn push(&mut self, button: UIButtons) {
+    pub fn push(&mut self, button: Buttons) {
         self.chain.push(button);
     }
 
@@ -32,7 +32,7 @@ impl ButtonChain {
     }
 
     // Return the chain as a slice so that it can be utilized in match statements.
-    pub fn as_slice(&self) -> &[UIButtons] {
+    pub fn as_slice(&self) -> &[Buttons] {
         self.chain.as_slice()
     }
 }
@@ -46,15 +46,15 @@ impl ButtonChain {
 const HISTORY_CAP: usize = 10;
 
 #[derive(Resource, Default)]
-pub struct UIStateHistory {
-    stack: Vec<UIState>,
+pub struct StateHistory {
+    stack: Vec<State>,
 }
 
-impl UIStateHistory {
+impl StateHistory {
 
     // Adding to history.  Will remove oldest state in history when cap has been reached to allow
     // for new additions to the state history.
-    pub fn push(&mut self, state: UIState) {
+    pub fn push(&mut self, state: State) {
         if self.stack.len() >= HISTORY_CAP {
             self.stack.remove(0);
         }
@@ -65,7 +65,7 @@ impl UIStateHistory {
     // Because we're working with a stack we must return an option for the scenario that the stack
     // could be empty.  Realistically speaking, I don't think this would ever happen since players
     // start on the main menu and always move into another UI.
-    pub fn pop(&mut self) -> Option<UIState> {
+    pub fn pop(&mut self) -> Option<State> {
         self.stack.pop()
     }
 
